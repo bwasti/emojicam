@@ -15,19 +15,23 @@ serve({
       const response = []
       const data = new Uint8Array(await req.arrayBuffer())
 
+      sm.util.tidy(() => {
+
       // convert data to a float tensor
       let t = sm.tensor(data).astype(sm.dtype.Float32)
+      const height = 54;
+      const width = 72;
 
       // mask out the alpha channel
       t = t
-        .reshape([36 * 36, 48 * 36, 4])
+        .reshape([height * 36, width * 36, 4])
         .eval()
         .index([':', ':', ':3'])
 
       // arrayfire only supports dim <= 4 :( so we have to hack
-      t = t.reshape([36, 36, 48, 36 * 3])
+      t = t.reshape([height, 36, width, 36 * 3])
       t = t.transpose([0, 2, 1, 3])
-      t = t.reshape([36 * 48, 36, 36, 3])
+      t = t.reshape([height * width, 36, 36, 3])
       t = t.transpose([0, 3, 1, 2]).div(sm.scalar(255))
 
       // run the model
@@ -37,6 +41,8 @@ serve({
       for (const i of out.toInt32Array()) {
         response.push(emoji[i])
       }
+
+      });
 
       // all set to return!
       return new Response(JSON.stringify(response))

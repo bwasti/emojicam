@@ -8,14 +8,15 @@ const dataset = []
 const unicodes = []
 
 // number of random mutations of each image
-const mut_per_img = 32
+const mut_per_img = 32 
 
 function indexToEmoji(index) {
   const unicode = unicodes[index]
-  return unicode
+  let emoji = unicode
     .split('-')
     .map((codePoint) => String.fromCodePoint(`0x${codePoint}`))
     .join('')
+  return emoji
 }
 
 const files = await readdir('emojis')
@@ -31,18 +32,22 @@ for (const file of sm.util.viter(files, () => emoji)) {
     continue
   }
   base_img = base_img.resize(0.5)
-  const unicode = file.split('_')[1].split('.')[0]
-  unicodes.push(unicode)
+  const components = file.split('.')[0].split('_')
+  if (components.length === 2) {
+    unicodes.push(components[1])
+  } else {
+    unicodes.push(components[2])
+  }
   emoji = indexToEmoji(unicodes.length - 1)
   base_imgs.push(base_img)
 }
 
 function mutateColor(img) {
   let t = img.tensor().astype(sm.dtype.Float32)
-  const r = 1 + (Math.random() - 0.5) / 6
-  const g = 1 + (Math.random() - 0.5) / 6
-  const b = 1 + (Math.random() - 0.5) / 6
-  const s = 1 + (Math.random() - 0.5) / 4
+  const r = 1 + (Math.random() - 0.5) / 50
+  const g = 1 + (Math.random() - 0.5) / 50
+  const b = 1 + (Math.random() - 0.5) / 50
+  const s = 1 + (Math.random() - 0.5) / 5
   t = t
     .div(sm.scalar(255))
     .mul(sm.tensor(new Float32Array([r, g, b, 1])))
@@ -51,6 +56,20 @@ function mutateColor(img) {
   t = sm.clamp(t, 0, 255)
   return new Image(t)
 }
+
+function randomCrop(img) {
+  // max 20% shift
+  const scale = 1 + Math.random() / 5
+  const offset_x = Math.floor(Math.random() * img.width * (scale - 1))
+  const offset_y = Math.floor(Math.random() * img.height * (scale - 1))
+  return img.resize(scale).crop(offset_x, offset_y, img.width, img.height)
+}
+
+const emojilist = []
+for (const i of sm.util.range(unicodes.length)) {
+  emojilist.push(indexToEmoji(i))
+}
+Bun.write('emoji.json', JSON.stringify(emojilist))
 
 console.log('mutating images')
 let index = 0
@@ -61,21 +80,17 @@ for (const base_img of sm.util.viter(base_imgs, () => emoji)) {
   for (const i of sm.util.range(mut_per_img)) {
     let img = base_img.rotate((Math.random() - 0.5) * 20)
     const scale = h / img.height
-    img = mutateColor(img.resize(scale))
-    img = img.flatten(255, 255, 255)
+    img = img.resize(scale)
+    img = mutateColor(img)
+    img = img.gaussblur(Math.random())
+    img = randomCrop(img)
+    img = img.flatten(30, 30, 30)
     const t = img.tensor().transpose([2, 0, 1]).astype(sm.dtype.Float32).div(sm.scalar(255))
     const ohe = sm.full([unicodes.length], 0).indexedAssign(sm.scalar(1), [index])
     dataset.push([t.unsqueeze(0), ohe.unsqueeze(0)])
   }
-
   index += 1
 }
-
-const emojilist = []
-for (const i of sm.util.range(unicodes.length)) {
-  emojilist.push(indexToEmoji(i))
-}
-Bun.write('emoji.json', JSON.stringify(emojilist))
 
 console.log('training model')
 const model = new EmojiClassifier(unicodes.length)
@@ -129,7 +144,7 @@ function dump(i) {
   return `loss: ${ema_loss.toFixed(4)}, acc: ${ema_accuracy.toFixed(2)}%, ex: ${example}`
 }
 
-for (const iter of sm.util.viter(20000, dump)) {
+for (const iter of sm.util.viter(50000, dump)) {
   const [X, Y] = getBatch([2, 4, 4])
   const Y_hat = model(X)
   const loss = loss_fn(Y_hat, Y)

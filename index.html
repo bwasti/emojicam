@@ -10,11 +10,22 @@
 
   video {
     visibility: hidden;
+    width: 740px;
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   html,
   body {
-    font-size: 12px;
+    font-size: 8px;
+    background: rgb(30,30,30);
+  }
+
+  #output div div {
+    height: 10px;
   }
 
   #output {
@@ -27,8 +38,8 @@
   }
 </style>
 <script>
-  const emoji_height = 36;
-  const emoji_width = 48;
+  const emoji_height = 54;
+  const emoji_width = 72;
   async function getImage() {
     const video = document.querySelector('video');
     const canvas = document.querySelector('canvas');
@@ -37,6 +48,7 @@
     canvas.height = emoji_height * 36;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+
     const response = await fetch(window.location.href, {
       method: 'POST',
       body: data
@@ -44,16 +56,17 @@
     const emojis = await response.json()
     const div = document.getElementById('output')
     div.replaceChildren()
+    const holderdiv = document.createElement('div')
     for (let i = 0; i < emoji_height; ++i) {
       let str = ''
       for (let j = 0; j < emoji_width; ++j) {
         str += emojis[i * emoji_width + j]
       }
       const subdiv = document.createElement('div');
-      subdiv.style.height = '16px';
       subdiv.textContent = str;
-      div.appendChild(subdiv);
+      holderdiv.appendChild(subdiv);
     }
+    div.appendChild(holderdiv)
   }
   async function loop() {
     await getImage()
@@ -72,14 +85,21 @@
     }).catch((err) => {
       console.error(`An error occurred: ${err}`);
     });
+    document.body.addEventListener('click', () => {
+      if (video.style.visibility == 'hidden') {
+        video.style.visibility = 'visible';
+      } else {
+        video.style.visibility = 'hidden';
+      }
+    });
   }
   window.addEventListener('load', load)
 </script>
 </head>
 
 <body>
-	<div id='output'></div>
 	<video></video>
+	<div id='output'></div>
 	<canvas></canvas>
 </body>
 

@@ -15,7 +15,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@shumai/image": "^0.0.3",
+    "@shumai/image": "^0.0.5",
     "@shumai/shumai": "^0.0.13"
   }
 }
