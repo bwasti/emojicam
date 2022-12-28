@@ -39,10 +39,10 @@ for (let file of sm.util.viter(files, ()=>emoji)) {
 
 function mutateColor(img) {
   let t = img.tensor().astype(sm.dtype.Float32)
-  const r = 1 + (Math.random() - 0.5) / 2
-  const g = 1 + (Math.random() - 0.5) / 2
-  const b = 1 + (Math.random() - 0.5) / 2
-  const s = 1 + (Math.random() - 0.5) / 1
+  const r = 1 + (Math.random() - 0.5) / 6
+  const g = 1 + (Math.random() - 0.5) / 6
+  const b = 1 + (Math.random() - 0.5) / 6
+  const s = 1 + (Math.random() - 0.5) / 4
   t = t.div(sm.scalar(255)).mul(sm.tensor(new Float32Array([r, g, b, 1]))).mul(sm.scalar(s)).mul(sm.scalar(255))
   t = sm.clamp(t, 0, 255)
   return new Image(t)
