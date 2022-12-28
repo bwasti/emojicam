@@ -1,4 +1,6 @@
-# img2emoji
+# emojicam
+
+An emoji filter for your webcam!
 
 ![img2emoji_smallest](https://user-images.githubusercontent.com/4842908/209761575-1a3d1bce-c8d1-49ee-9836-89c5a4a3e759.gif)
 
@@ -15,8 +17,8 @@ At serving time, the neural network is called with a batch of 1,728 patches (36x
 (Be sure to [install `bun`](https://bun.sh))
 
 ```
-$ git clone https://github.com/bwasti/img2emoji.git
-$ cd img2emoji
+$ git clone https://github.com/bwasti/emojicam.git
+$ cd emojicam
 $ bun add @shumai/shumai
 $ bun serve.ts
 ```
