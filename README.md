@@ -25,7 +25,8 @@ Then open `localhost:3000`
 
 ## Train from scratch
 
-![trainloop](https://user-images.githubusercontent.com/4842908/209762478-f233e811-fb4f-48c4-8e67-4d8d51bebac0.gif)
+![train](https://user-images.githubusercontent.com/4842908/209850459-8bcfe735-d93e-4a83-82cc-0d817946c4b9.gif)
+
 
 ```
 $ bun add @shumai/image
