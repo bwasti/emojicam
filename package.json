@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "format": "eslint '**/*.{js,ts}' '*.{js,ts,cjs}' package.json --fix"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "bun-types": "^0.2.2",
+    "eslint": "^8.27.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@shumai/image": "^0.0.3",
+    "@shumai/shumai": "^0.0.13"
+  }
+}
