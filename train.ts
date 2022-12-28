@@ -9,7 +9,7 @@ const dataset = []
 const unicodes = []
 
 // number of random mutations of each image
-const mut_per_img = 8
+const mut_per_img = 32
 
 function indexToEmoji(index) {
   const unicode = unicodes[index]
@@ -25,11 +25,12 @@ let emoji = ''
 const base_imgs = []
 for (let file of sm.util.viter(files, ()=>emoji)) {
   const p = path.join('emojis', file)
-  const base_img = new Image(p)
+  let base_img = new Image(p)
   // ignore the flat emoji for now
   if (base_img.channels !== 4) {
     continue
   }
+  base_img = base_img.resize(0.5)
   const unicode = file.split('_')[1].split('.')[0]
   unicodes.push(unicode)
   emoji = indexToEmoji(unicodes.length - 1)
@@ -41,10 +42,10 @@ function mutateColor(img) {
   const r = 1 + (Math.random() - 0.5) / 2
   const g = 1 + (Math.random() - 0.5) / 2
   const b = 1 + (Math.random() - 0.5) / 2
-  const s = 1 + (Math.random() - 0.5) / 2
-  t = t.mul(sm.tensor(new Float32Array([r, g, b]))).mul(sm.scalar(s))
+  const s = 1 + (Math.random() - 0.5) / 1
+  t = t.div(sm.scalar(255)).mul(sm.tensor(new Float32Array([r, g, b, 1]))).mul(sm.scalar(s)).mul(sm.scalar(255))
   t = sm.clamp(t, 0, 255)
-  return t
+  return new Image(t)
 }
 
 console.log('mutating images')
@@ -55,10 +56,10 @@ for (let base_img of sm.util.viter(base_imgs, ()=>emoji)) {
 
   for (let i of sm.util.range(mut_per_img)) {
     let img = base_img.rotate((Math.random() - 0.5) * 20)
-    img = img.flatten(255,255,255)
     const scale = h / img.height
-    img = img.resize(scale)
-    const t = mutateColor(img).transpose([2,0,1]).astype(sm.dtype.Float32)
+    img = mutateColor(img.resize(scale))
+    img = img.flatten(255,255,255)
+    const t = img.tensor().transpose([2,0,1]).astype(sm.dtype.Float32).div(sm.scalar(255))
     const ohe = sm.full([unicodes.length], 0).indexedAssign(sm.scalar(1), [index])
     dataset.push([t.unsqueeze(0), ohe.unsqueeze(0)])
   }
@@ -103,7 +104,7 @@ function test() {
   const tes = sm.argmax(Y_hat, 1)
   const ref = sm.argmax(Y, 1)
   const acc = 100 * tes.eq(ref).sum().toFloat32() / Y.shape[0]
-  const example = [indexToEmoji(tes.toInt32()), unicodes[tes.toInt32()], indexToEmoji(ref.toInt32()), unicodes[ref.toInt32()]]
+  const example = [ indexToEmoji(ref.toInt32()), unicodes[ref.toInt32()], indexToEmoji(tes.toInt32()), unicodes[tes.toInt32()] ]
   return [acc, example]
 }
 
@@ -119,7 +120,7 @@ function dump(i) {
   return `loss: ${ema_loss.toFixed(4)}, acc: ${ema_accuracy.toFixed(2)}%, ex: ${example}`
 }
 
-for (let iter of sm.util.viter(10000, dump)) {
+for (let iter of sm.util.viter(20000, dump)) {
   const [X, Y] = getBatch([2,4,4])
   const Y_hat = model(X)
   const loss = loss_fn(Y_hat, Y)
