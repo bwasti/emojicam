@@ -1,6 +1,6 @@
 # emojicam
 
-An emoji filter for your webcam!
+An emoji filter for your webcam!  *([writeup](https://jott.live/markdown/images_as_emoji))*
 
 ![img2emoji_smallest](https://user-images.githubusercontent.com/4842908/209761575-1a3d1bce-c8d1-49ee-9836-89c5a4a3e759.gif)
 
