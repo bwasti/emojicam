@@ -1,6 +1,6 @@
 # emojicam
 
-An emoji filter for your webcam!  *([writeup](https://jott.live/markdown/images_as_emoji))*
+An emoji filter for your webcam using [shumai](https://github.com/facebookresearch/shumai) + [bun](https://bun.sh)!  *([writeup](https://jott.live/markdown/images_as_emoji))*
 
 ![render](https://user-images.githubusercontent.com/4842908/209887791-65fd8e66-e95a-4e46-95db-552972540903.gif)
 
