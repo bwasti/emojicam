@@ -2,7 +2,10 @@
 
 An emoji filter for your webcam!  *([writeup](https://jott.live/markdown/images_as_emoji))*
 
-![img2emoji_smallest](https://user-images.githubusercontent.com/4842908/209761575-1a3d1bce-c8d1-49ee-9836-89c5a4a3e759.gif)
+![render](https://user-images.githubusercontent.com/4842908/209887791-65fd8e66-e95a-4e46-95db-552972540903.gif)
+
+For fidelity testing I used some colorful album art.  Recognize any of them?
+
 
 ## What is this?
 
