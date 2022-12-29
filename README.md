@@ -37,3 +37,11 @@ Then open `localhost:3000`
 $ bun add @shumai/image
 $ bun train.ts
 ```
+
+## Some stills
+
+<img width="854" alt="Screenshot 2022-12-28 at 7 49 36 PM" src="https://user-images.githubusercontent.com/4842908/209889797-f2749dad-9925-4283-b257-3229176c9c77.png">
+<img width="854" alt="Screenshot 2022-12-28 at 7 48 24 PM" src="https://user-images.githubusercontent.com/4842908/209889801-15dda3d9-f404-47f7-9812-9c04482eaf60.png">
+<img width="854" alt="Screenshot 2022-12-28 at 7 47 11 PM" src="https://user-images.githubusercontent.com/4842908/209889802-e87faee3-a99c-4c0a-9827-fb782e71636c.png">
+<img width="854" alt="Screenshot 2022-12-28 at 7 46 40 PM" src="https://user-images.githubusercontent.com/4842908/209889804-dca40a2e-d6a4-458d-a883-8ca26a81a382.png">
+
