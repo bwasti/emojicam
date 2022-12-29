@@ -8,11 +8,11 @@ const dataset = []
 const unicodes = []
 
 // number of random mutations of each image
-const mut_per_img = 32 
+const mut_per_img = 32
 
 function indexToEmoji(index) {
   const unicode = unicodes[index]
-  let emoji = unicode
+  const emoji = unicode
     .split('-')
     .map((codePoint) => String.fromCodePoint(`0x${codePoint}`))
     .join('')
@@ -82,7 +82,10 @@ for (const base_img of sm.util.viter(base_imgs, () => emoji)) {
     const scale = h / img.height
     img = img.resize(scale)
     img = mutateColor(img)
-    img = img.gaussblur(Math.random())
+    if (Math.random() > 0.5) {
+      img = img.gaussblur(Math.random() / 2)
+    }
+
     img = randomCrop(img)
     img = img.flatten(30, 30, 30)
     const t = img.tensor().transpose([2, 0, 1]).astype(sm.dtype.Float32).div(sm.scalar(255))

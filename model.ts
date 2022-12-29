@@ -6,6 +6,7 @@ export class EmojiClassifier extends sm.module.Module {
     this.conv0 = sm.module.conv2d(3, 8, 3, { stride: 2 })
     this.conv1 = sm.module.conv2d(8, 32, 3, { stride: 2 })
     this.linear = sm.module.linear(32, num_emojis)
+    this.skip_softmax = false
   }
   forward(x) {
     x = sm.avgPool2d(x, 2, 2, 2, 2)
@@ -16,6 +17,9 @@ export class EmojiClassifier extends sm.module.Module {
     x = x.tanh()
     x = x.reshape([x.shape[0], 32])
     x = this.linear(x)
+    if (this.skip_softmax) {
+      return x
+    }
     return x.softmax(1)
   }
 }
